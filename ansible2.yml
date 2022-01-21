@@ -1,4 +1,4 @@
-#удаление apache с помощью service
+#удаление apache
 ---
 - name: remove apache, closed ports 80 and 443, remove index.html
   hosts: all
