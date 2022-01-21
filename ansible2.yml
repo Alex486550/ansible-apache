@@ -1,0 +1,31 @@
+#удаление apache с помощью service
+---
+- name: remove apache, closed ports 80 and 443, remove index.html
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: remove apache web server
+    yum: name=httpd state=absent
+
+  - name: remove file index.html
+    file:
+     state: absent
+     path: /var/www/html/index.html
+
+  - name: start firewalld
+    service: name=firewalld state=started
+
+  - name: close port 80
+    firewalld:
+      port: 80/tcp
+      immediate: yes
+      permanent: true
+      state: disabled
+
+  - name: close port 443
+    firewalld:
+      port: 443/tcp
+      immediate: yes
+      permanent: true
+      state: disabled

@@ -1,3 +1,4 @@
+#Установка веб-сервера Apache с открытием портов 80 и 443
 ---
 - name: istall apache, open ports 80, 443 and copy index.html to webserver
   hosts: all

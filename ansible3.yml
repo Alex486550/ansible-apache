@@ -1,0 +1,24 @@
+#Плейбук изменения файла /etc/default/grub. Если в строке "GRUB_CMDLINE_LINUX" нет параметра biosdevname или
+#нет параметра net.ifname, или если они имеют значение не равное 0, то плейбук добавляет или изменяет(если параметр был) 
+#эти параметры со значением равным 0.
+---
+- name: Add biosdevname=0 to /etc/default/grub
+  hosts: all
+  become: yes
+  tasks:
+  - name: biosdevname=0 and net.ifnames=0 to /etc/default/grub
+    replace:
+      path: /etc/default/grub
+      regexp: '^(GRUB_CMDLINE_LINUX=(?:(?![" ]{{ option | regex_escape }}=).)*)(?:[" ]{{ option | regex_escape }}=\S+)?(.*")$'
+      replace: '\1 {{ option }}={{ value }}\2'
+    vars:
+      option: "{{ item.option }}"
+      value: 0
+    notify: update_grub
+    loop:
+      - { option: 'net.ifnames'}
+      - { option: 'biosdevname'}
+  handlers:
+  - name: update_grub
+    command: /usr/sbin/grub2-mkconfig
+    become_user: root
